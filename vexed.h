@@ -9,6 +9,7 @@
 
 extern uint8_t  arena[];
 extern uint8_t  level;
+extern uint16_t moves;
 extern uint8_t  cursor_offset;
 
 typedef struct {

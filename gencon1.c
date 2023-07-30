@@ -9,6 +9,8 @@
 #include "udgs.h"
 
 
+#pragma printf "%+2d"
+
 static void display_arena(void);
 static void display_ui(void);
 static void cursor_erase(void);
@@ -51,7 +53,8 @@ void gencon1_init()
 
 static void display_ui()
 {
-
+    gotoxy(0,0);
+    cprintf("Level: % 2d Moves: %d",level,moves);
 }
 
 static void display_arena()

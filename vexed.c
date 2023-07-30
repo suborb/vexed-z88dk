@@ -32,12 +32,14 @@ static void dropall(void);
 static int check_dropall(void);
 static void check_blah(void);
 static int check_match(int16_t noffset, uint8_t seeking);
-static void unpack_level(void);
+static void unpack_level(int level);
 static void cursor_erase(void);
 static void cursor_draw(void);
+static void draw_ui(void);
 static void draw_arena(void);
 
 static uint8_t  selected;
+       uint16_t moves;
        uint8_t  level;
        int16_t  cursor_offset;
        uint8_t  arena[ARENA_W * ARENA_H];
@@ -118,12 +120,14 @@ static void move_block(int16_t offset)
 
     if ( ncell != 0 ) return;
 
+    moves++;
     cursor_erase();
     arena[noffset] = arena[cursor_offset];
     arena[cursor_offset] = 0;
     cursor_offset = noffset;
     dropall();
     check_blah();
+    draw_ui();
     draw_arena();
     cursor_draw();
 }
@@ -206,8 +210,7 @@ static void check_blah(void)
         if (arena[i] >= 2 && arena[i] < 10 ) c = 1;
     }
     if ( c == 0 ) {
-        level++;
-        unpack_level();
+        unpack_level(level+1);
     }
 
     return;
@@ -231,10 +234,13 @@ __endasm;
            check_match(noffset + ARENA_W, seeking) + check_match(noffset - ARENA_W, seeking);
 }
 
-static void unpack_level(void)
+static void unpack_level(int lev)
 {
     const uint8_t *s;
     uint8_t  x, y;
+
+    level = lev;
+    moves = 0;
 
     memset(last_arena,255,sizeof(last_arena));
     memcpy(arena, frame, sizeof(frame));
@@ -256,6 +262,9 @@ static void unpack_level(void)
         s++;
     cursor_offset = s - arena;
 
+    draw_ui();
+    draw_arena(); 
+    cursor_draw(); 
 }
 
 
@@ -270,6 +279,11 @@ static void cursor_draw(void)
    display_driver.cursor_draw();
 }
 
+static void draw_ui(void)
+{
+    display_driver.display_ui();
+}
+
 static void draw_arena(void)
 {
     display_driver.display_arena();
@@ -280,10 +294,7 @@ int main(void)
   gencon1_init();
   memset(last_arena,255,sizeof(last_arena));
 
-  level = 0;
-  unpack_level();
-  draw_arena(); 
-  cursor_draw(); 
+  unpack_level(0);
   while(1) {
     handle_input();
     msleep(50);
