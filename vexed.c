@@ -11,10 +11,8 @@
 #include <sys/ioctl.h>
 
 #include "levels.h"
-#include "udgs.h"
+#include "vexed.h"
 
-#define ARENA_W 12
-#define ARENA_H 8
 
 #ifndef USE_JOYSTICK
 #define K_UP 'Q'
@@ -40,10 +38,11 @@ static void cursor_draw(void);
 static void draw_arena(void);
 
 static uint8_t  selected;
-static uint8_t  level;
-static int16_t  cursor_offset;
-static uint8_t  arena[ARENA_W * ARENA_H];
-static uint8_t  last_arena[ARENA_W * ARENA_H];
+       uint8_t  level;
+       int16_t  cursor_offset;
+       uint8_t  arena[ARENA_W * ARENA_H];
+       uint8_t  last_arena[ARENA_W * ARENA_H];
+       ddriver  display_driver;
 
 
 static const uint8_t frame[] = {
@@ -263,42 +262,24 @@ static void unpack_level(void)
 
 static void cursor_erase(void)
 {
-   gotoxy(cursor_offset % ARENA_W, cursor_offset / ARENA_W);
-   fputc_cons(arena[cursor_offset] + 128);
+   display_driver.cursor_erase();
 }
 
 static void cursor_draw(void)
 {
-   gotoxy(cursor_offset % ARENA_W, cursor_offset / ARENA_W);
-   fputc_cons(27); fputc_cons('p');
-   fputc_cons(arena[cursor_offset] + 128);
-   fputc_cons(27); fputc_cons('q');
+   display_driver.cursor_draw();
 }
 
 static void draw_arena(void)
 {
-    uint8_t *ptr = arena;
-    uint8_t  x,y;
-
-    for ( y = 0; y < ARENA_H; y++ ) {
-       gotoxy(0,y);
-       for ( x = 0; x < ARENA_W; x++ ) {
-          fputc_cons(*ptr + 128);          
-           ++ptr;
-       }
-    }
+    display_driver.display_arena();
 }
 
 int main(void)
 {
-  void *param = (void *)&udgs;
-  console_ioctl(IOCTL_GENCON_SET_UDGS, &param);
-
-#ifdef __SPECTRUM
-  cputs("\x01 ");
-#endif
-int i;
+  gencon1_init();
   memset(last_arena,255,sizeof(last_arena));
+
   level = 0;
   unpack_level();
   draw_arena(); 
