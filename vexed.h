@@ -9,6 +9,7 @@
 
 extern uint8_t  arena[];
 extern uint8_t  level;
+extern uint8_t  level_par;
 extern uint16_t moves;
 extern uint8_t  cursor_offset;
 
@@ -20,6 +21,12 @@ typedef struct {
 } ddriver;
 
 extern ddriver  display_driver;
+
+typedef struct {
+   const char *name;
+   const char *solution;
+   const uint8_t board[30];
+} leveldefn;
 
 extern void gencon1_init();
 

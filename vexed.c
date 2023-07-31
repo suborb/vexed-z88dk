@@ -41,10 +41,12 @@ static void draw_arena(void);
 static uint8_t  selected;
        uint16_t moves;
        uint8_t  level;
+       uint8_t  level_par;
        int16_t  cursor_offset;
        uint8_t  arena[ARENA_W * ARENA_H];
        uint8_t  last_arena[ARENA_W * ARENA_H];
-       ddriver  display_driver;
+       ddriver  display_driver; 
+       const leveldefn *levels;
 
 
 static const uint8_t frame[] = {
@@ -244,8 +246,8 @@ static void unpack_level(int lev)
 
     memset(last_arena,255,sizeof(last_arena));
     memcpy(arena, frame, sizeof(frame));
-    s = levels[level];
-
+    s = levels[level].board;
+    level_par = strlen(levels[level].solution) / 2;
     for ( y = 1; y < ARENA_H-1; y++ ) {
         for ( x = 1 ; x < ARENA_W-1; x+= 2 ) {
             int offs = y * ARENA_W + x;
@@ -293,7 +295,8 @@ int main(void)
 {
   gencon1_init();
   memset(last_arena,255,sizeof(last_arena));
-
+ 
+  levels = &classic[0];
   unpack_level(0);
   while(1) {
     handle_input();

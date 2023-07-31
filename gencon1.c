@@ -54,7 +54,7 @@ void gencon1_init()
 static void display_ui()
 {
     gotoxy(0,0);
-    cprintf("Level: % 2d Moves: %d",level,moves);
+    cprintf("Level: % 2d Moves: %d Par: %d",level,moves, level_par);
 }
 
 static void display_arena()
