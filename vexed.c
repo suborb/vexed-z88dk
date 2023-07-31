@@ -77,7 +77,7 @@ static void handle_input(void)
             break;
         }
     } else {
-	int c = getk();
+        int c = getk();
         switch (toupper(c)) {
         case K_DOWN:
             check_move(ARENA_W);
@@ -187,6 +187,7 @@ static void check_blah(void)
 {
     int c;
 
+    // TODO: This should search from the top not the bottom
     do {
        int d = 0;
        c = 0;
@@ -197,6 +198,9 @@ static void check_blah(void)
           if ( tile < 2 || tile >= 10 ) continue;
           d = check_match(offset, tile);
           if ( d > 1 ) {
+              display_driver.display_arena(DISPLAY_ZAP1);
+              display_driver.display_arena(DISPLAY_ZAP2);
+              display_driver.display_arena(DISPLAY_ZAP3);
               for ( int i = 0; i < sizeof(arena); i++) {
                   if ( arena[i] & 0x80 ) arena[i] = 0;
               }
@@ -288,7 +292,7 @@ static void draw_ui(void)
 
 static void draw_arena(void)
 {
-    display_driver.display_arena();
+    display_driver.display_arena(DISPLAY_NORMAL);
 }
 
 int main(void)

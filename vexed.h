@@ -8,14 +8,21 @@
 #define ARENA_H 8
 
 extern uint8_t  arena[];
+extern uint8_t  last_arena[];
 extern uint8_t  level;
 extern uint8_t  level_par;
 extern uint16_t moves;
 extern uint8_t  cursor_offset;
 
+#define DISPLAY_NORMAL 0
+#define DISPLAY_ZAP1 1
+#define DISPLAY_ZAP2 2
+#define DISPLAY_ZAP3 3
+#define DISPLAY_ZAP4 4
+
 typedef struct {
    void (*display_ui)(void);
-   void (*display_arena)(void);
+   void (*display_arena)(int display_mode);
    void (*cursor_erase)(void);
    void (*cursor_draw)(void);
 } ddriver;

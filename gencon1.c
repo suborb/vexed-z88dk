@@ -11,7 +11,7 @@
 
 #pragma printf "%+2d"
 
-static void display_arena(void);
+static void display_arena(int mode);
 static void display_ui(void);
 static void cursor_erase(void);
 static void cursor_draw(void);
@@ -62,7 +62,7 @@ static void display_ui(void)
     }
 }
 
-static void display_arena(void)
+static void display_arena(int mode)
 {
     uint8_t *ptr = arena;
     uint8_t  x,y;
@@ -70,7 +70,7 @@ static void display_arena(void)
     for ( y = 0; y < ARENA_H; y++ ) {
        gotoxy(bx,by+y);
        for ( x = 0; x < ARENA_W; x++ ) {
-          fputc_cons(*ptr + 128);
+          fputc_cons(*ptr | 128);
            ++ptr;
        }
     }
