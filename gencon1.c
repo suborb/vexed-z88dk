@@ -6,7 +6,7 @@
 
 
 #include "vexed.h"
-#include "udgs.h"
+#include "udgs8.h"
 
 
 #pragma printf "%+2d"
@@ -51,13 +51,18 @@ void gencon1_init()
     display_driver = driver;
 }
 
-static void display_ui()
+static void display_ui(void)
 {
     gotoxy(0,0);
     cprintf("Level: % 2d Moves: %d Par: %d",level,moves, level_par);
+	fputc_cons('\n');
+    for ( int i = 128; i < 140; i++ ) {
+	fputc_cons(i);
+
+    }
 }
 
-static void display_arena()
+static void display_arena(void)
 {
     uint8_t *ptr = arena;
     uint8_t  x,y;

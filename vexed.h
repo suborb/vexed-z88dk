@@ -14,10 +14,10 @@ extern uint16_t moves;
 extern uint8_t  cursor_offset;
 
 typedef struct {
-   void (*display_ui)();
-   void (*display_arena)();
-   void (*cursor_erase)();
-   void (*cursor_draw)();
+   void (*display_ui)(void);
+   void (*display_arena)(void);
+   void (*cursor_erase)(void);
+   void (*cursor_draw)(void);
 } ddriver;
 
 extern ddriver  display_driver;
@@ -28,7 +28,8 @@ typedef struct {
    const uint8_t board[30];
 } leveldefn;
 
-extern void gencon1_init();
+extern void gencon1_init(void);
+extern void gencon2_init(void);
 
 
 #endif

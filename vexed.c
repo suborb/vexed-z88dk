@@ -42,7 +42,7 @@ static uint8_t  selected;
        uint16_t moves;
        uint8_t  level;
        uint8_t  level_par;
-       int16_t  cursor_offset;
+       uint8_t  cursor_offset;
        uint8_t  arena[ARENA_W * ARENA_H];
        uint8_t  last_arena[ARENA_W * ARENA_H];
        ddriver  display_driver; 
@@ -50,14 +50,14 @@ static uint8_t  selected;
 
 
 static const uint8_t frame[] = {
-    10,14,14,14,14,14,14,14,14,14,14,11,
-    15,00,00,00,00,00,00,00,00,00,00,15,
-    15,00,00,00,00,00,00,00,00,00,00,15,
-    15,00,00,00,00,00,00,00,00,00,00,15,
-    15,00,00,00,00,00,00,00,00,00,00,15,
-    15,00,00,00,00,00,00,00,00,00,00,15,
-    15,00,00,00,00,00,00,00,00,00,00,15,
-    12,16,16,16,16,16,16,16,16,16,16,13,
+     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+     1,00,00,00,00,00,00,00,00,00,00, 1,
+     1,00,00,00,00,00,00,00,00,00,00, 1,
+     1,00,00,00,00,00,00,00,00,00,00, 1,
+     1,00,00,00,00,00,00,00,00,00,00, 1,
+     1,00,00,00,00,00,00,00,00,00,00, 1,
+     1,00,00,00,00,00,00,00,00,00,00, 1,
+     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 };
 
 static void handle_input(void)
@@ -293,7 +293,7 @@ static void draw_arena(void)
 
 int main(void)
 {
-  gencon1_init();
+  gencon2_init();
   memset(last_arena,255,sizeof(last_arena));
  
   levels = &classic[0];
