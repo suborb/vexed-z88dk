@@ -65,7 +65,7 @@ static const uint8_t frame[] = {
 static void handle_input(void)
 {
     if ( selected ) {
-        switch (toupper(getk())) {
+        switch (toupper(fgetc_cons())) {
         case K_RIGHT:
             move_block(1);
             break;
@@ -79,7 +79,7 @@ static void handle_input(void)
             break;
         }
     } else {
-        int c = getk();
+        int c = fgetc_cons();
         switch (toupper(c)) {
         case K_DOWN:
             check_move(ARENA_W);
@@ -191,6 +191,7 @@ static int check_dropall(void)
 
 static void check_for_match(void)
 {
+    int remnants[10];
     int c;
 
     do {
@@ -217,9 +218,19 @@ static void check_for_match(void)
           } else arena[offset] &= 0x7f;
        }
     } while ( c != 0 );
+    memset(remnants, 0, sizeof(remnants));
     for ( int i = 0; i < sizeof(arena); i++) {
-	arena[i] &= 0x7f;
-        if (arena[i] >= 2 && arena[i] < 10 ) c = 1;
+        arena[i] &= 0x7f;
+        if (arena[i] >= 2 && arena[i] < 10 ) {
+            remnants[arena[i]]++;
+            c = 1;
+        }
+    }
+    // If we've got 1 element left, restart the level
+    for ( int i = 0; i < 10; i++ ) {
+        if ( remnants[i] == 1 ) {
+            unpack_level(level);
+        }
     }
     if ( c == 0 ) {
         unpack_level(level+1);
