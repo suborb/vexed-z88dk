@@ -22,6 +22,8 @@
 #define K_SELECT ' '
 #endif
 
+#define K_RESET 'G'
+
 
 
 static void handle_input(void);
@@ -30,8 +32,8 @@ static void move_block(int16_t offset);
 static void check_move(int16_t offset);
 static void dropall(void);
 static int check_dropall(void);
-static void check_blah(void);
-static int check_match(int16_t noffset, uint8_t seeking);
+static void check_for_match(void);
+static int check_for_matches(int16_t noffset, uint8_t seeking);
 static void unpack_level(int level);
 static void cursor_erase(void);
 static void cursor_draw(void);
@@ -93,6 +95,10 @@ static void handle_input(void)
             break;
         case K_SELECT:
             check_select();
+            break;
+        case K_RESET:
+            unpack_level(level);
+            break;
         }
     }
 }
@@ -128,7 +134,7 @@ static void move_block(int16_t offset)
     arena[cursor_offset] = 0;
     cursor_offset = noffset;
     dropall();
-    check_blah();
+    check_for_match();
     draw_ui();
     draw_arena();
     cursor_draw();
@@ -183,20 +189,20 @@ static int check_dropall(void)
 }
 
 
-static void check_blah(void)
+static void check_for_match(void)
 {
     int c;
 
-    // TODO: This should search from the top not the bottom
     do {
        int d = 0;
        c = 0;
        for ( int i = 0; i < sizeof(arena); i++) arena[i] &= 0x7f;
 
-       for ( int offset = sizeof(arena) ; offset >= ARENA_W; offset-- ) {
+      // for ( int offset = sizeof(arena) ; offset >= ARENA_W; offset-- ) {
+       for ( int offset = ARENA_W; offset < sizeof(arena); offset++ ) {
           int tile = arena[offset];
           if ( tile < 2 || tile >= 10 ) continue;
-          d = check_match(offset, tile);
+          d = check_for_matches(offset, tile);
           if ( d > 1 ) {
               display_driver.display_arena(DISPLAY_ZAP1);
               display_driver.display_arena(DISPLAY_ZAP2);
@@ -222,12 +228,8 @@ static void check_blah(void)
     return;
 }
 
-static int check_match(int16_t noffset, uint8_t seeking)
+static int check_for_matches(int16_t noffset, uint8_t seeking)
 {
-__asm
-	ld	a,r
-	out	(254),a
-__endasm;
     if ( noffset < 0 || noffset > (ARENA_W * ARENA_H - 1) ) {
         return 0;
     }
@@ -236,8 +238,8 @@ __endasm;
         return 0;
     }
     arena[noffset] |= 0x80;
-    return 1 + check_match(noffset -1, seeking) + check_match(noffset + 1, seeking) +
-           check_match(noffset + ARENA_W, seeking) + check_match(noffset - ARENA_W, seeking);
+    return 1 + check_for_matches(noffset -1, seeking) + check_for_matches(noffset + 1, seeking) +
+           check_for_matches(noffset + ARENA_W, seeking) + check_for_matches(noffset - ARENA_W, seeking);
 }
 
 static void unpack_level(int lev)
@@ -297,7 +299,14 @@ static void draw_arena(void)
 
 int main(void)
 {
+#if WANT_GENCON1 == 1
+  gencon1_init();
+#elif  WANT_GENCON2 == 1
   gencon2_init();
+#else
+#error Must define a screen driver
+#endif
+
   memset(last_arena,255,sizeof(last_arena));
  
   levels = &classic[0];

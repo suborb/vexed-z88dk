@@ -3,6 +3,7 @@
 #define VEXED_H
 
 #include <stdint.h>
+#include "target.h"
 
 #define ARENA_W 12
 #define ARENA_H 8

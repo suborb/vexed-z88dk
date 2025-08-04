@@ -3,10 +3,16 @@
 
 #include <conio.h>
 #include <sys/ioctl.h>
+#include <sound.h>
+#include <features.h>
 
 
 #include "vexed.h"
+
+#if WANT_GENCON2 == 1
+
 #include "udgs16.h"
+
 
 
 #pragma printf "%+2d"
@@ -27,27 +33,27 @@ static int  bx;
 static int  by;
 
 static int tile_bg[] = {
-    BLACK,	// Blank
-    BLACK,       // Wall
-    YELLOW,      // Bolt
+    BLACK,	    // Blank
+    BLACK,      // Wall
+    YELLOW,     // Bolt
     BLUE,       // Circle
-    CYAN,         // Diamond
-    BLACK,       // Chequerboard,
-    BLACK,       // Diagonal cross,
-    BLUE,     // Bow tie
-    BLACK,         // Square cross
+    CYAN,       // Diamond
+    BLACK,      // Chequerboard,
+    BLACK,      // Diagonal cross,
+    BLUE,       // Bow tie
+    BLACK,      // Square cross
 };
 
 static int tile_fg[] = {
-    WHITE,	// Blank
+    WHITE,	    // Blank
     CYAN,       // Wall
-    RED ,      // Bolt
-    WHITE,       // Circle
-    RED,         // Diamond
-    WHITE,       // Chequerboard,
-    GREEN,       // Diagonal cross,
-    MAGENTA,     // Bow tie
-    RED,         // Square cross
+    RED ,       // Bolt
+    WHITE,      // Circle
+    RED,        // Diamond
+    WHITE,      // Chequerboard,
+    GREEN,      // Diagonal cross,
+    MAGENTA,    // Bow tie
+    RED,        // Square cross
 };
 
 
@@ -69,6 +75,7 @@ void gencon2_init()
 #endif
     textbackground(BLACK);
     textcolour(WHITE);
+    bordercolor(BLACK);
     clrscr();
     screensize(&w,&h);
     bx = (w - ARENA_W * 2) / 2;
@@ -80,7 +87,7 @@ void gencon2_init()
 static void display_ui(void)
 {
     gotoxy(0,0);
-    cprintf("Level: % 2d Moves: %d Par: %d",level,moves, level_par);
+    cprintf("Level: % 2d Moves: %d Par: %d  ",level+1,moves, level_par);
 }
 
 static void display_arena(int mode)
@@ -113,6 +120,13 @@ static void display_arena(int mode)
         ++lptr;
         }
     }
+#ifdef __HAVE_ONEBITSOUND
+    switch ( mode ) {
+    case DISPLAY_ZAP1:
+        bit_fx(0);
+        break;
+    }
+#endif
 }
 
 static void cursor_erase(void)
@@ -144,3 +158,5 @@ static void cursor_draw(void)
     fputc_cons(base+3);
     fputc_cons(27); fputc_cons('q');
 }
+
+#endif
