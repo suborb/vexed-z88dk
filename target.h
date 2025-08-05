@@ -5,8 +5,15 @@
 
 // Jupiter Ace
 #ifdef __ACE__
+// +ace hasn't enough free UDGs to use double sized
+#define WANT_GENCON1 1
+#define WANT_GENCON2 0
+#endif
+
+#ifdef __PC6001__
 #define WANT_GENCON1 0
 #define WANT_GENCON2 1
+#define SWITCH_MODE 2
 #endif
 
 
@@ -28,7 +35,6 @@
 #define WANT_GENCON1 0
 #define WANT_GENCON2 1
 #define SWITCH_MODE  2
-#pragma redirect CRT_FONT=_font_8x8_bbc_system
 #endif
 
 #endif

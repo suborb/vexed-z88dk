@@ -65,12 +65,12 @@ static int tile_fg[] = {
 
 static int  bx;
 static int  by;
-static int  hasudg;
+static unsigned int  caps;
 
 
 void gencon1_init()
 {
-    unsigned int   w,h, caps;
+    unsigned int   w,h;
 
 
 #ifdef SWITCH_MODE
@@ -82,12 +82,11 @@ void gencon1_init()
 
     console_ioctl(IOCTL_GENCON_GET_CAPS, &caps);
 
-    hasudg = 0;
     if ( caps & CAP_GENCON_UDGS ) {
         void *param = (void *)&udgs;
         console_ioctl(IOCTL_GENCON_SET_UDGS, &param);
-        hasudg = 1;
     }
+    caps &= ~CAP_GENCON_FG_COLOUR;
 
 #ifdef __SPECTRUM
     cputs("\x01 ");
@@ -122,14 +121,16 @@ static void display_arena(int mode)
             if ( t != *lptr || *ptr & 128 ) {
                 gotoxy(bx+x,by+y);
                 if ( *ptr & 128 ) {
-                    textbackground(tile_bg[t] >> mode );
-                    textcolour(tile_fg[t] >> mode);
-                } else {
+                    if ( caps & CAP_GENCON_FG_COLOUR ) {
+                        textbackground(tile_bg[t] >> mode );
+                        textcolour(tile_fg[t] >> mode);
+                    }
+                } else if ( caps & CAP_GENCON_FG_COLOUR ) {
                     textbackground(tile_bg[t] );
                     textcolour(tile_fg[t]);
                 }
-                if ( hasudg ) {
-                    fputc_cons(t|128);
+                if ( caps & CAP_GENCON_UDGS ) {
+                    fputc_cons(t == 32 ? 32 : t|128);
                 } else {
                     fputc_cons(asciz[t]);
                 }
@@ -147,7 +148,7 @@ static void cursor_erase(void)
 {
    int t = arena[cursor_offset];
    gotoxy(bx + cursor_offset % ARENA_W, by + cursor_offset / ARENA_W);
-   fputc_cons(hasudg ? t|128 : asciz[t]);
+   fputc_cons(caps & CAP_GENCON_UDGS ? t|128 : asciz[t]);
 }
 
 static void cursor_draw(void)
@@ -155,7 +156,7 @@ static void cursor_draw(void)
    int t = arena[cursor_offset];
    gotoxy(bx + cursor_offset % ARENA_W, by + cursor_offset / ARENA_W);
    fputc_cons(27); fputc_cons('p');
-   fputc_cons(hasudg ? t|128 : asciz[t]);
+   fputc_cons(caps & CAP_GENCON_UDGS ? t|128 : asciz[t]);
    fputc_cons(27); fputc_cons('q');
 }
 
